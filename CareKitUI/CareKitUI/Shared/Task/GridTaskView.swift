@@ -7,6 +7,14 @@
 import Foundation
 import SwiftUI
 
+public struct EmptyView: View {
+//    public typealias Body = <#type#>
+    
+    public var body: some View {
+            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        }
+}
+
 public struct GridTaskView<Header: View, DetailDisclosure:View, Footer: View>: View {
     
     @Environment(\.careKitStyle) private var style
@@ -23,7 +31,7 @@ public struct GridTaskView<Header: View, DetailDisclosure:View, Footer: View>: V
     
     public var body: some View {
         CardView {
-            VStack(alignment: .leading, spacing: style.dimension.directionalInsets1.top) {
+            HStack(alignment: .top, spacing: style.dimension.directionalInsets1.top) {
                 VStack { header }
                     .if(isCardEnabled && isHeaderPadded) { $0.padding([.vertical, .leading]) }
             
@@ -86,14 +94,24 @@ public struct GridTaskView<Header: View, DetailDisclosure:View, Footer: View>: V
         
 }
 
+
+
 //struct SwiftUIView: View {
 //    var body: some View {
 //        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
 //    }
 //}
-//
-//struct SwiftUIView_Previews: PreviewProvider {
-//    static var previews: some View {
-//       GridTaskView()
-//    }
-//}
+////
+struct SwiftUIView_Previews: PreviewProvider {
+    static var previews: some View {
+        let sharedEmptyView = EmptyView()
+    
+        GridTaskView {
+            return sharedEmptyView
+        } footer: {
+            return sharedEmptyView
+        } detailDisclosure: {
+            return sharedEmptyView
+        }
+    }
+}
