@@ -28,24 +28,44 @@ public struct GridTaskView<Header: View, DetailDisclosure: View, Footer: View>: 
                 VStack { header }
                     .if(isCardEnabled && isHeaderPadded) { $0.padding([.horizontal, .top]) }
                 
-                Button {
-                    self.action()
-                } label: {
-                    HStack { header }
-                    .if(isCardEnabled && isHeaderPadded) { $0.padding([.vertical, .leading]) }
-                    Spacer()
-                    VStack { detailDisclosure }
-                        .if(isCardEnabled && isDetailDisclosurePadded) { $0.padding([.vertical, .trailing]) }
+                VStack { footer }
+                    .if(isCardEnabled && isFooterPadded) { $0.padding([.horizontal, .bottom]) }
                 
-                .buttonStyle(NoHighlightStyle())
-                }
-                Divider()
+            
+                    Button {
+                        self.action()
+                    } label: {
+                        HStack { detailDisclosure }
+                        .if(isCardEnabled && isDetailDisclosurePadded) { $0.padding([.horizontal, .leading]) }
+                    }
+                    .padding()
+                
+                
                 
                 instructions?
                     .font(.subheadline)
-                    .fontWeight(.medium)
+                    .fontWeight(.none)
                     .lineLimit(nil)
                     .if(isCardEnabled && isFooterPadded) { $0.padding([.horizontal, .bottom]) }
+                
+//                Button {
+//                    self.action()
+//                } label: {
+//                    HStack { header }
+//                    .if(isCardEnabled && isHeaderPadded) { $0.padding([.vertical, .leading]) }
+//                    Spacer()
+//                    VStack { detailDisclosure }
+//                        .if(isCardEnabled && isDetailDisclosurePadded) { $0.padding([.vertical, .trailing]) }
+//
+//                .buttonStyle(NoHighlightStyle())
+//                }
+//                Divider()
+                
+//                instructions?
+//                    .font(.subheadline)
+//                    .fontWeight(.medium)
+//                    .lineLimit(nil)
+//                    .if(isCardEnabled && isFooterPadded) { $0.padding([.horizontal, .bottom]) }
                 }
         }
     }
@@ -138,6 +158,24 @@ public extension GridTaskView where DetailDisclosure == _GridTaskViewDetailDiscl
     }
 }
 
+public struct _GridTaskViewDetailDisclosure: View {
+    @Environment(\.careKitStyle) private var style
+    @Environment(\.sizeCategory) private var sizeCategory
+    
+    @OSValue<CGFloat>(values: [.watchOS: 6], defaultValue: 16) private var padding
+    
+    fileprivate let isComplete: Bool
+    
+    public var body: some View {
+        CircularCompletionView(isComplete: isComplete) {
+            Image(systemName: "checkmark")
+                .resizable()
+                .padding(padding.scaled())
+                .frame(width: style.dimension.buttonHeight2.scaled(), height: style.dimension.buttonHeight2.scaled())
+        }
+    }
+}
+
 public extension GridTaskView where Footer == _GridTaskViewFooter {
     init(isComplete: Bool,
          @ViewBuilder header: () -> Header,
@@ -176,24 +214,6 @@ public struct _GridTaskViewFooter: View {
     }
 }
 
-public struct _GridTaskViewDetailDisclosure: View {
-    @Environment(\.careKitStyle) private var style
-    @Environment(\.sizeCategory) private var sizeCategory
-    
-    @OSValue<CGFloat>(values: [.watchOS: 6], defaultValue: 16) private var padding
-    
-    fileprivate let isComplete: Bool
-    
-    public var body: some View {
-        CircularCompletionView(isComplete: isComplete) {
-            Image(systemName: "checkmark")
-                .resizable()
-                .padding(padding.scaled())
-                .frame(width: style.dimension.buttonHeight2.scaled(), height: style.dimension.buttonHeight2.scaled())
-        }
-    }
-}
-
 public extension GridTaskView where Footer == _GridTaskViewFooter, DetailDisclosure == _GridTaskViewDetailDisclosure, Header == _GridTaskViewHeader {
     init(title: Text,
          detail: Text? = nil,
@@ -229,6 +249,7 @@ struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             GridTaskView(title: Text("Doxylamine"), detail: Text("3 remaining"), isComplete: false, action:{}, instructions: Text("Take with a full glass of water"))
+            GridTaskView(title: Text("Doxylamine"), detail: Text("3 remaining"), isComplete: true, action:{}, instructions: Text("Take with a full glass of water"))
         }
         .padding()
     }
